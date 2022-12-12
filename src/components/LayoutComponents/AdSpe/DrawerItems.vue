@@ -66,21 +66,15 @@ export default {
             },
             {
               icon: "fa-solid fa-caret-right",
-              label: "Retrieve / Re-assign",
-              count: 0,
-              path: "/asc/page/application/s1/multiple",
-            },
-            {
-              icon: "fa-solid fa-caret-right",
               label: "For Release",
               count: data.forReleaseCount || 0,
-              path: "/asc/page/application/s1/special",
+              path: "/asc/page/application/s1/for-release",
             },
             {
               icon: "fa-solid fa-caret-right",
               label: "Released",
               count: data.releasedCount || 0,
-              path: "/asc/page/application/s1/special",
+              path: "/asc/page/application/s1/released",
             }
           ]
         },

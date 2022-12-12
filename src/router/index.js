@@ -41,8 +41,9 @@ export default route(function ({ store, ssrContext }) {
     ),
   });
   Router.beforeEach((to, from, next) => {
-    if (to.requiresAuth && !accessToken) {
-      next({ name: "home" });
+    console.log(to.meta, "TOTOLO ANG BUOG MO");
+    if (to.meta.requiresAuth && !accessToken) {
+      window.location.href=process.env.ADMIN_BASE_URL;
     } else next();
   });
 

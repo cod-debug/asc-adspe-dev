@@ -70,7 +70,7 @@
                   <q-input outlined label="Duration (in seconds)" v-model="i.lengthSize" disable/>
                 </div>
                 <div class="col-4 col-md-4 q-pa-sm" v-if="i.type_of_medium.size && k == 0">
-                  <q-input outlined label="Dimension" v-model="i.lengthSize" hint="e.i format: 8 x 11 inches" disable />
+                  <q-input outlined label="Length x Width" v-model="i.lengthSize" hint="e.i format: 8 x 11 inches" disable />
                 </div>
                 <div class="col-4 col-md-4 q-pa-sm" v-if="i.type_of_medium.others && k == 0">
                   <q-input outlined label="Others" v-model="i.others" disable/>
@@ -176,8 +176,7 @@
                 </q-card-section>
               </q-card>
 
-              <div class="q-mt-xl">
-
+              <div class="q-mt-xl" v-if="parentData.subDocUrl">
                 <div class="row">
                   <div class="col-12">
                     <q-select outlined
@@ -222,17 +221,18 @@
                         :rules="[val => !!val || 'Field is required']" />
                   </div>
                   <div class="col-12 col-md-4 q-pa-sm"
-                        v-if="type_of_document.remarks == 'Yes'">
-                    <q-input label="Has Remarks *" 
-                        v-model="remarks"
-                        outlined
-                        :rules="[val => !!val || 'Field is required']" />
-                  </div>
-                  <div class="col-12 col-md-4 q-pa-sm"
                         v-if="type_of_document.input == 'Yes'">
                     <q-input label="Has Input *" 
                         v-model="input"
                         outlined
+                        :rules="[val => !!val || 'Field is required']" />
+                  </div>
+                  <div class="col-12 col-md-4 q-pa-sm"
+                        v-if="type_of_document.remark == 'Yes'">
+                    <q-input label="Has Remarks *" 
+                        v-model="remarks"
+                        outlined
+                        type="textarea"
                         :rules="[val => !!val || 'Field is required']" />
                   </div>
                 </div>

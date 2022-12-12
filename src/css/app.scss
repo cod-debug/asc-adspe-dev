@@ -335,3 +335,13 @@ input[type='email'] {
 .q-editor {
   font-family: 'Calibri', 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
 }
+
+.no-data-found {
+  border: 5px solid $red-14;
+  padding: 10px;
+  background-color: $red-2;
+  color: $red-14;
+  border-right: 0;
+  border-bottom: 0;
+  border-top: 0;
+}

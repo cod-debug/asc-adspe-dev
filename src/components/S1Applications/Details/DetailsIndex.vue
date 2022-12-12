@@ -258,6 +258,11 @@
               text: "white",
             };
             break;
+          default: 
+            return {
+              bg: "grey",
+              text: "white",
+            };
         }
       },
 

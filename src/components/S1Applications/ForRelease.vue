@@ -2,7 +2,7 @@
   <div class="q-pa-md q-mt-lg q-ml-lg">
     <q-card bordered class="my-card" elevated>
       <q-card-section class="row">
-        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S1 APPLICATION -  INDIVIDUAL</div>
+        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S1 APPLICATION -  FOR RELEASE</div>
         <div class="text-right col-md-6">
           <!-- <q-btn label="NEW APPLICATION" elevated class="q-mr-sm position-right" size="md" icon="add" color="red-14" /> -->
           <q-btn :label="localTimer == 0 ? '' : localTimer + ' sec'" elevated size="md" icon="sync" @click="refresh" :disabled="localTimer > 0" color="primary" />
@@ -13,7 +13,7 @@
 
       <q-card-section>
         <div class="row q-my-lg">
-          <div class="col-md-9 col-sm-12">
+          <div class="col-md-12 col-sm-12">
             <form @submit.prevent="getList(true)" method="POST" >
               <q-input bottom-slots  v-model="search" outlined label="Search Applications" hint="Hit ''Enter'' key or click search icon to search application.">
                 <template v-slot:append>
@@ -24,7 +24,7 @@
               <!-- <q-input outlined label="Search Applications" class="q-mt-md"  v-model="search" @blur="getList(true)" /> -->
             </form>
           </div>
-          <div class="col-md-3 q-px-md col-sm-12">
+          <!-- <div class="col-md-3 q-px-md col-sm-12">
             <div class="shadow-2 q-pa-sm">
               <b>Legend: </b>
               <table width="100%">
@@ -36,9 +36,9 @@
                 </tr>
               </table>
             </div>
-          </div>
+          </div> -->
         </div>
-        <q-tabs v-model="active_tab"
+        <!-- <q-tabs v-model="active_tab"
                 @update:model-value="getList()"
                 align="left"
                 class="text-dark"
@@ -50,8 +50,9 @@
           </q-tab>
         </q-tabs>
 
+        <hr class="q-tabs-gutter" color="lightgray" v-if="table_data.length > 0" /> -->
 
-        <hr class="q-tabs-gutter" color="lightgray" v-if="table_data.length > 0 || tabs.length > 0" />
+      
 
         <div class="table_container" v-if="!is_loading">
           <div v-if="table_data.length <= 0" class="no-data-found">
@@ -77,7 +78,6 @@
                 <q-td
                   key="referrence_code"
                   :props="props"
-                  :class="`bg-${current_id_bg}`"
                 >
                   {{ props.row.referrence_code || '--' }}
                 </q-td>
@@ -174,55 +174,55 @@
       is_loading: true,
       lockModal: false,
       tabs: [
-        {
-          name: "ORIGINAL",
-          code: 'ORIGINAL',
-          count: 0
-        },
-        {
-          name: "REVISION",
-          code: 'REVISION',
-          count: 0
-        },
-        {
-          name: "COMPLIANCE",
-          code: 'COMPLIANCE',
-          count: 0
-        },
-        {
-          name: "RELEASED APPEAL",
-          code: 'RELEASED APPEAL',
-          count: 0
-        },
-        {
-          name: "RETURNED APPLICATION",
-          code: 'RETURNED APPLICATION',
-          count: 0
-        }
+        // {
+        //   name: "ORIGINAL",
+        //   code: 'ORIGINAL',
+        //   count: 0
+        // },
+        // {
+        //   name: "REVISION",
+        //   code: 'REVISION',
+        //   count: 0
+        // },
+        // {
+        //   name: "COMPLIANCE",
+        //   code: 'COMPLIANCE',
+        //   count: 0
+        // },
+        // {
+        //   name: "RELEASED APPEAL",
+        //   code: 'RELEASED APPEAL',
+        //   count: 0
+        // },
+        // {
+        //   name: "RETURNED APPLICATION",
+        //   code: 'RETURNED APPLICATION',
+        //   count: 0
+        // }
       ],
 
-      legends: [
-        {
-          color: "blue",
-          theme_color: "blue-2",
-          title: "ORIGINAL",
-        },
-        {
-          color: "gold",
-          theme_color: "gold",
-          title: "FOR COMPLIANCE",
-        },
-        {
-          color: "green",
-          theme_color: "green-4",
-          title: "REVISION",
-        }
-      ],
+    legends: [
+      {
+        color: "blue",
+        theme_color: "blue-2",
+        title: "ORIGINAL",
+      },
+      {
+        color: "gold",
+        theme_color: "gold",
+        title: "FOR COMPLIANCE",
+      },
+      {
+        color: "green",
+        theme_color: "green-4",
+        title: "REVISION",
+      }
+    ],
 
 
       localTimer: null,
       refresh_sec: 0,
-      active_tab: "ORIGINAL",
+      active_tab: "ALL",
 
       //pagination
       columns: [
@@ -242,15 +242,7 @@
     computed:{
       userID(){
         return localStorage.getItem('ui');
-      },
-      current_id_bg(){
-        console.log( this.legends.filter((i) => {
-          return i.title == this.active_tab;
-        })[0].color, "COMPUTED");
-        return this.legends.filter((i) => {
-          return i.title == this.active_tab;
-        })[0].theme_color;
-      },
+      }
     },
     mounted(){
       this.initApp();
@@ -337,17 +329,17 @@
         
         let payload = {
           data: {
-            "form_group": "INDIVIDUAL",
-            "application_type": ["REGULAR", "BATCH"],
+            "release_status": "FOR RELEASE",
+            // "application_type": ["REGULAR", "BATCH"],
             "search": vm.search,
-            "process_type": vm.active_tab
+            // "process_type": vm.active_tab
           },
           params: {
             take: vm.take,
             page: vm.current
           }
         }
-        let {data, status} = await vm.$store.dispatch("s1/getS1Applications", payload);
+        let {data, status} = await vm.$store.dispatch("asc_user/getPerReleaseStatus", payload);
         if([200, 201].includes(status)){
           vm.table_data = data.data.map((item) => {
             return {...item, 
@@ -368,7 +360,7 @@
         let payload = {
 
           data: {
-            "form_group": "INDIVIDUAL",
+            "form_group": "FOR RELEASE",
             "application_type": ["REGULAR", "BATCH"],
             "search": vm.search,
             "process_type": processType

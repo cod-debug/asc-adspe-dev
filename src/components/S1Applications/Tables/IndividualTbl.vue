@@ -74,9 +74,10 @@
         let vm = this;
         let payload = {
           data: {
-            "form_group": "INDIVIDUAL",
-            "search": "",
-            "processType": vm.tab_type
+            "form_group": vm.tab_type,
+            "application_type": ["REGULAR", "BATCH"],
+            "search": vm.search,
+            "process_type": vm.active_tab
           },
           params: {
             take: vm.take,

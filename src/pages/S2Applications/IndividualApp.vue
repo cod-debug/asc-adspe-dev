@@ -1,3 +1,16 @@
 <template>
-  <h1>Individual Applications </h1>
+  <IndividualIndex />
 </template>
+
+<script>
+	import IndividualIndex from "components/S2Applications/IndividualIndex";
+
+	export default {
+		data: () => ({
+
+        }),
+		components: {
+          IndividualIndex
+        }
+	}
+</script>

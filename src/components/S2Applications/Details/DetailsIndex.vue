@@ -2,9 +2,9 @@
   <div class="q-pa-md q-mt-lg q-ml-lg">
     <q-card bordered class="my-card" elevated>
       <q-card-section class="row">
-        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S1 APPLICATION -  INDIVIDUAL</div>
+        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S2 APPLICATION -  INDIVIDUAL</div>
         <div class="text-right col-md-6">
-          <q-btn label="VIEW APPLICATION LISTS" elevated class="q-mr-sm position-right" size="md" icon="list" color="red-14" @click="backToList" />
+          <q-btn label="VIEW APPLICATION" elevated class="q-mr-sm position-right" size="md" icon="list" color="red-14" @click="backToList" />
         </div>
       </q-card-section>
 
@@ -21,11 +21,12 @@
         </q-section>
         <div class="row q-mt-md">
           <div class="col-md-4 col-lg-4 col-sm-12 q-px-sm">
-            <q-input v-model="application_type" label="Application Type" outlined disable />
+            <q-input v-model="application_type" label="Application Type" outlined />
 
           </div>
           <div class="col-md-4 col-lg-4 col-sm-12 q-px-sm">
-            <q-input v-model="form_group" label="Submission Type" outlined disable />
+            <q-select v-model="form_group" label="Submission Type" outlined>
+            </q-select>
           </div>
         </div>
         <hr class="q-my-xl" />
@@ -34,12 +35,17 @@
           <q-separator />
           <PresentorInformation class="q-mb-sm" />
           <q-separator />
-          <MaterialInformation :appId="$route.params.id" class="q-mb-sm" />
+          <MaterialInformation :appId="$route.params.id" class="q-mb-sm" :selected_item="selected_item" v-if="type_of_medium" />
+          <q-separator />
+          <FinalMaterial class="q-mb-sm"  />
+          <q-separator />
+          <StampMaterials />
+         
         </q-list>
-        <div v-else class="text-center">
-            <q-spinner-hourglass
+        <div v-else>
+            <q-spinner-grid
               color="primary"
-              size="5rem"
+              size="2em"
             />
         </div>
       </q-card-section>
@@ -90,56 +96,42 @@
               <!-- END EXTERNAL COMMENTS -->
           </q-card-section>
         </q-card>
+
       </q-card-section>
       <q-card-section>
         <div class="row">
           <div class="col-12 col-md-4">
-            <div class="form-group">
-              <q-select v-model="screener_id" 
-              :options="screener_options" 
-              outlined 
-              size="sm" 
-              label="ASSIGN A SCREENER"
-              option-label="fullname"
-              option-value="id" />
-              <q-btn color="red-14" label="FORWARD TO AD SCREENER" @click="reassign(1005)" icon="verified" class="q-mr-sm q-mt-sm" :disable="!screener_id" />
-            </div>
+            <q-select :options="decision_options" label="Decision" outlined class="q-ma-sm" v-model="decision_status" />
           </div>
-          
-          <div class="col-12 col-md-4"></div>
-
           <div class="col-12 col-md-4">
-            <div class="form-group text-right">
-              <q-select v-model="adspe_id" 
-              :options="adspe_options" 
-              outlined 
-              size="sm" 
-              label="REASSIGN EVALUATOR"
-              option-label="fullname"
-              option-value="id" />
-              <q-btn color="red-14" label="RE-ASSIGN TO EVALUATOR" @click="reassign(1008)" icon="verified" class="q-mr-sm q-mt-sm" :disable="!adspe_id" />
-            </div>
+            <q-input type="date" v-if="decision_status == 'APPROVED'" label="Valid until" outlined stack-label class="q-ma-sm" v-model="valid_until_date_input" />
           </div>
-        </div>
-        
+        </div>  
+        <q-btn color="red-14" label="SUBMIT" @click="verifyApp(true)" :disable="(decision_status == 'APPROVED' && valid_until_date_input == null) || !decision_status" icon="verified" class="q-mr-sm" />
+        <!-- <q-btn color="red-14" label="REJECT" icon="unpublished" @click="disapproveApp" /> -->
       </q-card-section>
+      <!-- <disapprove-modal :disapproveFunction="verifyApp" /> -->
     </q-card>
   </div>
 </template>
-
 <script>
   import ClientInformation from "./Items/ClientInformation";
   import PresentorInformation from "./Items/PresentorInformation";
   import MaterialInformation from "./Items/MaterialInformation";
-  import RichText from "components/AddOns/RichText"
-  import { Notify } from "quasar";
-  import { stat } from "fs";
+  import RichText from "components/AddOns/RichText";
+  // import DisapproveModal from "./Modals/DisapproveModal.vue";
+  import StampMaterials from "./Items/StampMaterials.vue";
+  import FinalMaterial from "./Items/FinalMaterial.vue";
+import { Notify } from "quasar";
   export default {
     components: {
       ClientInformation,
       PresentorInformation,
       MaterialInformation,
-      RichText
+      RichText,
+      // DisapproveModal,
+      StampMaterials,
+      FinalMaterial,
     },
 
     computed: {
@@ -166,6 +158,7 @@
       }
     },
     data: () => ({
+      show_disapprove_modal: false,
       is_loading: true,
 
       "internal_comment_input": "",
@@ -177,6 +170,8 @@
       "form_group":"",
       "referrence_code":null,
       "application_type":"REGULAR",
+      "applicant": null,
+      "company": {},
       "slugified_app_type":"regular",
       "process_type":"ORIGINAL",
       "brand":"BRAND D",
@@ -221,21 +216,31 @@
       "verifiedDateByScreener":null,
       "verifiedDateByReviewer":null,
       "revision_count":0,
-
-      loading_list: false,
-      reviewer_id: null,
-      adspe_id: null,
-      screener_id: null,
-      affiliate_name: "",
-
-      screener_options: [],
+      "applicant_fullname": null,
+      "company_name": null,
+      "company_phone": null,
+      "type_of_medium": null,
 
       // CUSTOM VARIABLES ONLY
       "type_of_medium_parsed": [],
       "type_of_medium_new": [],
+      "affiliate_id": null,
+      "affiliate_name": "",
+      "isMoving": null,
+
+      selected_item: {},
+      decision_options: ["APPROVED", "INCOMPLETE", "DISAPPROVED"],
+      valid_until_date_input: null,
     }),
     mounted(){
       this.initApp();
+    },
+    watch: {
+      decision_status(newVal, oldVal){
+        if(newVal != "APPROVED"){
+          this.valid_until_date_input = null;
+        }
+      } 
     },
     methods: {
       paymentStatusColor(status){
@@ -258,14 +263,11 @@
               text: "white",
             };
             break;
-          default: 
-            return {
-              bg: "grey",
-              text: "white",
-            };
         }
       },
-
+      disapproveApp(){
+        this.show_disapprove_modal = true;
+      },
       intFormatter(amount){
         const currencyFormatter = Intl.NumberFormat("en-US", {
             style: "currency",
@@ -277,32 +279,9 @@
 
       initApp(){
         this.getSpecific();
-        this.getAllUsers();
       },
       backToList() {
         this.$router.push({ name: "individual-application-list" });
-      },
-
-      async getAllUsers(){
-        let vm = this;
-        vm.loading_list = true;
-        let payload = {
-          page: 1,
-          size: 1000,
-          order: "fname:asc",
-          search: "",
-          filter: "asc",
-        };
-        
-        let {data, status} = await vm.$store.dispatch('admin_api/getAllUsers', payload);
-
-        vm.screener_options = data.rows.filter((item)=> {
-          return item.type == "scrner";
-        })
-        vm.adspe_options = data.rows.filter((item)=> {
-          return item.type == "evaltr";
-        })
-
       },
 
       async getSpecific(){
@@ -317,7 +296,6 @@
         for(let column in data){
           vm[column] = data[column];
         }
-        
 
         vm.applicant_fullname = `${vm.applicant.fname} ${vm.applicant.mname} ${vm.applicant.lname}` || "--";
         vm.company_name = `${vm.company.name}` || "--";
@@ -327,14 +305,19 @@
         vm.company_email = `${vm.applicant.email}` || "--";
         vm.internal_comment_input = `${vm.internal_comment != null ? vm.internal_comment : ''}` || "";
         vm.external_comment_input = `${vm.external_comment != null ? vm.external_comment : ''}` || "";
-        vm.affiliate_name = data.company?.affiliate?.name || "--";
         vm.type_of_medium_parsed = vm.type_of_medium.map((i) => {
           return i.type_of_medium
         })
         vm.type_of_medium_new = data.type_of_medium;
-        vm.$nextTick(() => {
+        vm.affiliate_id = data.company.affiliateID;;
+        vm.affiliate_name = data.company?.affiliate?.name || "--";
+        vm.isMoving = data.type_of_medium[0].isMoving == 0 ? false : true;
+        // alert(vm.isMoving);
+        
+        this.selected_item = data;
+        this.$nextTick(() => {
           vm.is_loading = false;
-        });
+        })
       },
       
       async saveComment(){
@@ -345,6 +328,7 @@
               "internal_comment": vm.internal_comment_input,
             }
         }
+        
         if(vm.comment_type === 'external_comment'){
           payload = {
             id: vm.selectedId,
@@ -354,7 +338,7 @@
           }
         }
 
-        let {data, status} = await vm.$store.dispatch("asc_user/comment", payload);
+        let {data, status} = await vm.$store.dispatch("ascUser/comment", payload);
 
         if([200, 201].includes(status)){
           Notify.create({
@@ -375,16 +359,29 @@
         }
       },
 
-      async reassign(user_role){
+      async verifyApp(ver){
         let vm = this;
         let payload = {
-          id: this.$route.params.id,       
+          id: this.$route.params.id,          
           data: {
-            "assigned_user_id": user_role == 1005 ? vm.screener_id.id : vm.adspe_id.id,
-            "assigned_userRole": user_role
+            isVerified: ver,
           }
         }
-        let {data, status} = await vm.$store.dispatch("asc_user/reassign", payload);
+
+        if(vm.form_type == 's2'){
+          payload = {
+            id: this.$route.params.id,          
+            data: {
+              decision_status: vm.decision_status,
+              valid_until: vm.valid_until_date_input,
+              isVerified: ver,
+            }
+          }
+        }
+        // console.log(vm.form_type);
+        // console.log(payload, "VERIFY PAYLOAD ");
+        
+        let {data, status} = await vm.$store.dispatch("s1/verifyApp", payload);
 
         if([200, 201].includes(status)){
           Notify.create({

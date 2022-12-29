@@ -72,6 +72,14 @@ const routes = [
         component: () => import("pages/S2Applications/IndividualApp.vue"),
       },
       {
+        name: "individual-application-update-s2",
+        path: "application/s2/update/:id",
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import("pages/S2Applications/DetailsIndex.vue"),
+      },
+      {
         name: "announcement",
         path: "announcement",
         meta: {
@@ -79,8 +87,20 @@ const routes = [
         },
         component: () => import("src/pages/AnnouncementsIndex.vue"),
       },
+    ],
+  },
+  {
+    path: "/account",
+    name: "account",
+    component: () => import("layouts/ApplicantLayout.vue"),
+    children: [
+      {
+        path: "user-profile",
+        name: "user-profile",
+        component: () => import('pages/Profile/Account/UserProfile/UserProfileIndex.vue'),
+      },
     ]
-  }
+  },
 ];
 
 export default routes;

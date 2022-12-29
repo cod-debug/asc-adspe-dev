@@ -21,7 +21,7 @@ export const getS1Applications = async ({ commit }, payload) => {
   try {
       res = await axios({
       method: "post",
-      url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/get-applications/`,
+      url: `${getEnv('API_BASE_URL')}${prefix}/evaluator/get-applications/`,
       data: payload.data,
       params: payload.params,
       headers: headers,
@@ -33,12 +33,13 @@ export const getS1Applications = async ({ commit }, payload) => {
   }
   return res
 }
+
 export const verifyApp = async ({ commit }, payload) => {
     let res = {};
     try {
         res = await axios({
           method: "put",
-          url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/verify-applications/${payload.id}`,
+          url: `${getEnv('API_BASE_URL')}${prefix}/evaluator/verify-applications/${payload.id}`,
           data: payload.data,
           headers: headers,
         });
@@ -54,8 +55,8 @@ export const updateApp = async ({ commit }, payload) => {
     let res = {};
     try {
         res = await axios({
-        method: "post",
-        url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/update-applications/${payload.id}`,
+        method: "put",
+        url: `${getEnv('API_BASE_URL')}${prefix}/evaluator/update-applications/${payload.id}`,
         data: payload.data,
         headers: headers,
         })
@@ -67,36 +68,20 @@ export const updateApp = async ({ commit }, payload) => {
     return res;
 }
 
-export const docAddToList = async ({ commit }, payload) => {
-  let res = {};
-  try {
-      res = await axios({
-      method: "post",
-      url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/document-type/create/`,
-      data: payload,
-      headers: headers,
-      })
-  } catch (e) {
-      console.log(e);
-      res.data = e.response.data
-      res.status = e.response.status
+export const getS2Applications = async ({ commit }, payload) => {
+    let res = {};
+    try {
+        res = await axios({
+        method: "post",
+        url: `${getEnv('API_BASE_URL')}${prefix}/asc-user/view-all/s2-application/`,
+        data: payload.data,
+        params: payload.params,
+        headers: headers,
+        })
+    } catch (e) {
+        console.log(e);
+        res.data = e.response.data
+        res.status = e.response.status
+    }
+    return res
   }
-  return res;
-}
-
-export const docRemoveToList = async ({ commit }, payload) => {
-  let res = {};
-  try {
-      res = await axios({
-      method: "delete",
-      url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/document-type/remove/${payload.id}`,
-      data: payload,
-      headers: headers,
-      })
-  } catch (e) {
-      console.log(e);
-      res.data = e.response.data
-      res.status = e.response.status
-  }
-  return res;
-}

@@ -1,5 +1,6 @@
 <template>
-  <q-expansion-item header-class="text-dark bg-blue-2 shadow-3" bordered v-model="expanded">
+  <q-expansion-item header-class="text-dark bg-blue-2 shadow-3"
+                    bordered>
     <template v-slot:header>
       <q-item-section avatar>
         <q-avatar icon="label_important" color="blue-2" text-color="dark" />
@@ -69,7 +70,7 @@
                   <q-input outlined label="Duration (in seconds)" v-model="i.lengthSize" disable/>
                 </div>
                 <div class="col-4 col-md-4 q-pa-sm" v-if="i.type_of_medium.size && k == 0">
-                  <q-input outlined label="Length x Width" v-model="i.lengthSize" hint="e.i format: 8 x 11 inches" disable />
+                  <q-input outlined label="Size / Length" v-model="i.lengthSize" hint="e.i format: 8 x 11 inches" disable />
                 </div>
                 <div class="col-4 col-md-4 q-pa-sm" v-if="i.type_of_medium.others && k == 0">
                   <q-input outlined label="Others" v-model="i.others" disable/>
@@ -161,7 +162,7 @@
                         <div class="">
                           <label>File Path:</label>
                           <br />
-                          <label class="text-grey-14">{{parentData.origMainDocUrl}}</label>
+                          <label class="text-grey-14">{{parentData.subDocUrl}}</label>
                         </div>
                       </div>
                     </div>
@@ -173,79 +174,10 @@
                     </div>
                   </div>
                 </q-card-section>
-              </q-card>
-
-              <q-form ref="add_doc_type_form"
-                  @submit.prevent="addToList"
-                  :greedy="true">
-                <div class="q-mt-xl" v-if="parentData.subDocUrl">
-                  <div class="row">
-                    <div class="col-12">
-                      <q-select outlined
-                          label="Type Of Document *"
-                          v-model="type_of_document"
-                          option-label="name"
-                          option-value="id"
-                          :options="documents_type"
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                  </div>
-                  
-                  <div class="row" v-for="(item, key) in doc_types" :key="key">
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.launch == 'Yes'">
-                      <q-input label="Date of launch *" 
-                          v-model="item.date_launch"
-                          outlined
-                          stack-label
-                          type="date"
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.expire == 'Yes'">
-                      <q-input label="Expiration Date *" 
-                          v-model="item.expiration_date"
-                          stack-label
-                          type="date"
-                          outlined
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.basis == 'Yes'">
-                      <q-input label="Basis *"  
-                          v-model="item.basis"
-                          outlined
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.variant == 'Yes'">
-                      <q-input label="Variant *" 
-                          v-model="item.variant"
-                          outlined
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.input == 'Yes'">
-                      <q-input label="Input *" 
-                          v-model="item.input"
-                          outlined
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                    <div class="col-12 col-md-4 q-pa-sm"
-                          v-if="type_of_document.remark == 'Yes'">
-                      <q-input label="Remarks *" 
-                          v-model="item.remarks"
-                          outlined
-                          type="textarea"
-                          :rules="[val => !!val || 'Field is required']" />
-                    </div>
-                  </div>
-                  <q-btn class="bg-red-14 text-white" style="width: 100%;" block label="Add to List" type="submit" icon="task_alt" />    
-                </div>
-              </q-form>
-              <div class="q-mt-md" v-if="doc_types_current.length > 0">
+                
+                
+              <div class="q-ma-md" v-if="doc_types_current.length > 0">
                 <q-table dense :columns="doc_types_columns" :rows="doc_types_current" square>
-                  
                   <template #body="props">
                     <q-tr
                       :props="props"
@@ -297,39 +229,51 @@
                   </template>
                 </q-table>
               </div>
+
+                <q-card-section class="q-pa-sm" v-if="parentData.revision_letter">
+                  <div class="q-mt-sm">
+                    <q-icon name="bookmark" class="text-red-15" style="font-size: 24px" /> REVISION LETTER
+                  </div>
+                </q-card-section>
+
+                <q-card-section v-if="parentData.revision_letter">
+                  <div class="row">
+                    <div class="col-sm-12 q-pa-sm">
+                      <div class="q-gutter-sm">
+                        <div class="">
+                          <label>File Path:</label>
+                          <br />
+                          <label class="text-grey-14">{{parentData.revision_letter}}</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-12 q-pa-sm text-right">
+                      <q-btn color="red-14" @click="viewDoc(parentData.revision_letter)">
+                        <q-icon name="open_in_new" />
+                        VIEW DOCUMENT
+                      </q-btn>
+                    </div>
+                  </div>
+                </q-card-section>
+                
+              </q-card>
             </q-card-section>
           </q-card>
         </q-form>
       </q-card-section>
     </q-card>
-    
-      
-    <q-dialog v-model="show_remove_doc_modal" persistent transition-show="scale" modern transition-hide="scale">
-      <q-card class="bg-red-14 text-white" style="width: 300px">
-        <q-card-section>
-          <div class="text-h6 text-center">Are you sure you want to delete this TYPE OF DOCUMENT?</div>
-        </q-card-section>
-
-        <q-card-actions align="center" class="bg-white text-red q-py-lg">
-          <q-btn flat label="CONFIRM" @click="docuRemoveToList" />
-          <q-btn flat label="CANCEL" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-expansion-item>
 </template>
 
 <script>
-import { Dialog, Notify } from 'quasar';
+import { Notify } from 'quasar';
 
   export default {
     props: ["appId"],
     data: () => ({
-      expanded: true,
       company_name: "",
       single_media: "",
       language: null,
-      show_remove_doc_modal: false,
 
       type_of_medium_options: [],
       type_of_mediums_updated: [],
@@ -347,42 +291,19 @@ import { Dialog, Notify } from 'quasar';
 
       isMoving: null,
       is_moving_length: "",
-      type_of_document: "",
 
-      documents_type: [],
-      current: 1,
-      max: 0,
-      req_size: 10000,
-      loading_list: true,
+      
 
-      date_of_launch: new Date("MM/DD/YYYY"),
-      expiration_date: new Date("MM/DD/YYYY"),
+      doc_types_columns: [
+          { name: 'type_of_document', align: 'left', label: 'TYPE OF DOCUMENT', field: 'type_of_document', sortable: true },
+          { name: 'input', align: 'left', label: 'INPUT', field: 'input', sortable: true, },
+          { name: 'variant', align: 'left', label: 'VARIANT', field: 'variant', sortable: true, },
+          { name: 'expiration_date', align: 'left', label: 'EXPIRES ON', field: 'expiration_date', sortable: true, },
+          { name: 'date_launch', align: 'left', label: 'BASED ON', field: 'date_launch', sortable: true, },
+          { name: 'remarks', align: 'left', label: 'REMARKS', field: 'remarks', sortable: true, },
+        ],
+      doc_types_current: [],
 
-      doc_types: [
-        {
-            "type_of_document": "",
-            "basis": "",
-            "variant": "",
-            "input": "",
-            "remarks": "",
-            "date_launch": null,
-            "expiration_date": null,
-        }
-    ],
-    
-    selected_id_for_remove_doc: null,
-    selected_index_for_remove_doc: null,
-    doc_types_current: [],
-
-    doc_types_columns: [
-        { name: 'type_of_document', align: 'left', label: 'TYPE OF DOCUMENT', field: 'type_of_document', sortable: true },
-        { name: 'input', align: 'left', label: 'INPUT', field: 'input', sortable: true, },
-        { name: 'variant', align: 'left', label: 'VARIANT', field: 'variant', sortable: true, },
-        { name: 'expiration_date', align: 'left', label: 'EXPIRES ON', field: 'expiration_date', sortable: true, },
-        { name: 'date_launch', align: 'left', label: 'BASED ON', field: 'date_launch', sortable: true, },
-        { name: 'remarks', align: 'left', label: 'REMARKS', field: 'remarks', sortable: true, },
-        { name: 'actions', align: 'left', label: 'ACTIONS', field: 'actions', sortable: true, },
-      ],
     }),
     computed:{
       parentData(){
@@ -410,126 +331,11 @@ import { Dialog, Notify } from 'quasar';
           }
         }
       },
-      type_of_document(newVal, oldVal){
-        console.log(newVal, "DATE OF LAUNCH")
-      }
     },
     mounted() {
       this.initApp();
     },
     methods:{
-      async validate(ref) {
-        return await this.$refs[ref].validate();
-      },
-
-      removeDoc(selected_id, selected_index){
-        this.selected_id_for_remove_doc = selected_id;
-        this.selected_index_for_remove_doc = selected_index;
-        this.show_remove_doc_modal = true;
-      },
-
-      async addToList(){
-        let vm = this;
-        if(!await vm.validate("add_doc_type_form")){
-          return false;
-        }
-
-        let payload = {
-          doc_types: vm.doc_types
-        }
-
-        payload.doc_types[0].type_of_document = vm.type_of_document.name;
-        payload.doc_types[0].appId = vm.parentData.id;
-        // console.log(payload, "ADD TO LIST");
-
-        let {data, status} = await vm.$store.dispatch("s1/docAddToList", payload);
-        if([200, 201].includes(status)){
-          Notify.create({
-            message: data.message,
-            position: 'top-right',
-            closeBtn: "X",
-            timeout: 2000,
-            color: 'green',
-          });
-          vm.parentData.initApp();
-          vm.expanded = true;
-        } else {
-          Notify.create({
-            message: data.message,
-            position: 'top-right',
-            closeBtn: "X",
-            timeout: 2000,
-            color: 'red',
-          });
-        }
-      },
-
-      async docuRemoveToList(){
-        let vm = this;
-        let payload = {
-          id: vm.selected_id_for_remove_doc
-        }
-        let {data, status} = await vm.$store.dispatch("s1/docRemoveToList", payload);
-        if([200, 201].includes(status)){
-          Notify.create({
-            message: data.message,
-            position: 'top-right',
-            closeBtn: "X",
-            timeout: 2000,
-            color: 'green',
-          });
-          vm.parentData.initApp();
-          vm.expanded = true;
-          this.show_remove_doc_modal = false;
-        } else {
-          Notify.create({
-            message: data.message,
-            position: 'top-right',
-            closeBtn: "X",
-            timeout: 2000,
-            color: 'red',
-          });
-        }
-      },
-
-      async getDocType() {
-        let vm = this;
-
-        let payload = {
-          page: vm.current,
-          size: vm.req_size,
-          order: "name:asc",
-          search: "",
-        }
-
-        vm.loading_list = true;
-        let { data, status } = await vm.$store.dispatch("admin_api/getAllTypeOfDocu", payload);
-        if ([200, 201].includes(status)) {
-          console.log(data.rows);
-          let parsed_rows = data.rows.map((item) => {
-            let parsed = {
-              ...item
-            }
-            for(let column in item) {
-              if(column != 'id' && column != 'status' && column != 'name'){
-                parsed[column] = item[column] ? "Yes" : "No";
-              } else if (column == 'status') {
-                parsed[column] = item[column] ? "Active" : "Inactive";
-              }
-            }
-            return parsed;
-          });
-          console.log(parsed_rows);
-          vm.documents_type = parsed_rows;
-          vm.current = data.cpage;
-          vm.max = data.tpage;
-          vm.loading_list = false;
-        } else {
-          vm.loading_list = false;
-        }
-
-      },
-
       async saveUpdate(){
         let vm = this;
         let payload = {
@@ -621,7 +427,6 @@ import { Dialog, Notify } from 'quasar';
         this.getAllExecution();
         this.getAllMediums();
         this.getAllLanguage();
-        this.getDocType();
         this.multimedia_options = [
           {
             dialect: "",
@@ -789,7 +594,7 @@ import { Dialog, Notify } from 'quasar';
 
         // getAllExecutionTypes
       },
-      
+
       async getAllLanguage(){
         let vm = this;
 
@@ -804,7 +609,6 @@ import { Dialog, Notify } from 'quasar';
         vm.language_options = data.rows;
         // getAllExecutionTypes
       },
-
     }
   }
 </script>

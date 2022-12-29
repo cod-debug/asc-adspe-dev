@@ -105,7 +105,7 @@
                   key="type_medium_name"
                   :props="props"
                 >
-                  {{ props.row.type_medium_name.join(", ") }}
+                  {{ Array.isArray(props.row.type_medium_name) ? props.row.type_medium_name.join(", ") : props.row.type_medium_name }}
                 </q-td>
                 <q-td
                   key="internal_status"

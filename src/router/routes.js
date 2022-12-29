@@ -48,6 +48,16 @@ const routes = [
         component: () => import("pages/S1Applications/DetailsIndex.vue"),
       },
       {
+        name: "multiple-application-list",
+        path: "application/s1/multiple",
+        component: () => import("pages/S1Applications/MultipleApp.vue"),
+      },
+      {
+        name: "special-application-list",
+        path: "application/s1/special",
+        component: () => import("pages/S1Applications/SpecialApp.vue"),
+      },
+      {
         name: "for-release-list",
         path: "application/s1/for-release",
         meta: {
@@ -56,7 +66,7 @@ const routes = [
         component: () => import("pages/S1Applications/ForReleaseApp.vue"),
       },
       {
-        name: "special-application-list",
+        name: "released-list",
         path: "application/s1/released",
         meta: {
           requiresAuth: true,

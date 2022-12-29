@@ -2,7 +2,7 @@
   <div class="q-pa-md q-mt-lg q-ml-lg">
     <q-card bordered class="my-card" elevated>
       <q-card-section class="row">
-        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S1 APPLICATION -  FOR RELEASE</div>
+        <div class="text-h6 page-title text-dark col-md-6"><q-icon name="list" />  S1 APPLICATION -  MULTIPLE</div>
         <div class="text-right col-md-6">
           <!-- <q-btn label="NEW APPLICATION" elevated class="q-mr-sm position-right" size="md" icon="add" color="red-14" /> -->
           <q-btn :label="localTimer == 0 ? '' : localTimer + ' sec'" elevated size="md" icon="sync" @click="refresh" :disabled="localTimer > 0" color="primary" />
@@ -13,7 +13,7 @@
 
       <q-card-section>
         <div class="row q-my-lg">
-          <div class="col-md-12 col-sm-12">
+          <div class="col-md-9 col-sm-12">
             <form @submit.prevent="getList(true)" method="POST" >
               <q-input bottom-slots  v-model="search" outlined label="Search Applications" hint="Hit ''Enter'' key or click search icon to search application.">
                 <template v-slot:append>
@@ -24,7 +24,7 @@
               <!-- <q-input outlined label="Search Applications" class="q-mt-md"  v-model="search" @blur="getList(true)" /> -->
             </form>
           </div>
-          <!-- <div class="col-md-3 q-px-md col-sm-12">
+          <div class="col-md-3 q-px-md col-sm-12">
             <div class="shadow-2 q-pa-sm">
               <b>Legend: </b>
               <table width="100%">
@@ -36,9 +36,9 @@
                 </tr>
               </table>
             </div>
-          </div> -->
+          </div>
         </div>
-        <!-- <q-tabs v-model="active_tab"
+        <q-tabs v-model="active_tab"
                 @update:model-value="getList()"
                 align="left"
                 class="text-dark"
@@ -50,11 +50,11 @@
           </q-tab>
         </q-tabs>
 
-        <hr class="q-tabs-gutter" color="lightgray" v-if="table_data.length > 0" /> -->
+        <hr class="q-tabs-gutter" color="lightgray" />
 
       
 
-        <div class="table_container" v-if="!is_loading">
+        <div class="table_container q-mt-md" v-if="!is_loading">
           <div v-if="table_data.length <= 0" class="no-data-found">
             <q-icon name="warning" /> NO DATA FOUND...
           </div>
@@ -70,6 +70,7 @@
             <template #body="props">
               <q-tr
                 :props="props"
+                :class="(hasOwner(props.row)) ? (isOwned(props.row)) ? 'bg-yellow' : 'bg-hrey-4': 'bg-white'"
                 hover
                 style="cursor: pointer"
                 @click="update(props.row)"
@@ -92,7 +93,7 @@
                   key="company_name"
                   :props="props"
                 >
-                  {{ props.row.company_name }}
+                  {{ props.row.company.name || '' }}
                 </q-td>
                 <q-td
                   key="brand"
@@ -105,6 +106,12 @@
                   :props="props"
                 >
                   {{ Array.isArray(props.row.type_medium_name) ? props.row.type_medium_name.join(", ") : props.row.type_medium_name }}
+                </q-td>
+                <q-td
+                  key="status"
+                  :props="props"
+                >
+                  {{ props.row.status }}
                 </q-td>
                 <q-td
                   key="internal_status"
@@ -122,9 +129,8 @@
             </template>
           </q-table>
 
-          <div class="text-right q-mt-md">
+          <div class="text-right q-mt-md" v-if="max_page > 0">
             <q-pagination v-model="current"
-                          v-if="max_page"
                           @update:model-value="getList()"
                           :max="max_page"
                           direction-links
@@ -161,67 +167,57 @@
   </div>
 </template>
 
-
 <script>
   import { stat } from "fs";
-  import { Notify } from "quasar";
+import { Notify } from "quasar";
   export default {
     data: () => ({
       pinkModel: false,
       search: "",
-      is_search: false,
       is_loading: true,
       lockModal: false,
       tabs: [
-        // {
-        //   name: "ORIGINAL",
-        //   code: 'ORIGINAL',
-        //   count: 0
-        // },
-        // {
-        //   name: "REVISION",
-        //   code: 'REVISION',
-        //   count: 0
-        // },
-        // {
-        //   name: "COMPLIANCE",
-        //   code: 'COMPLIANCE',
-        //   count: 0
-        // },
-        // {
-        //   name: "RELEASED APPEAL",
-        //   code: 'RELEASED APPEAL',
-        //   count: 0
-        // },
-        // {
-        //   name: "RETURNED APPLICATION",
-        //   code: 'RETURNED APPLICATION',
-        //   count: 0
-        // }
+        {
+          name: "ORIGINAL",
+          code: 'ORIGINAL',
+          count: 0
+        },
+        {
+          name: "REVISION",
+          code: 'REVISION',
+          count: 0
+        },
+        {
+          name: "COMPLIANCE",
+          code: 'COMPLIANCE',
+          count: 0
+        },
+        /*{
+          name: "RELEASED APPEAL",
+          code: 'RELE',
+          count: 3
+        }*/
       ],
 
-    legends: [
-      {
-        color: "blue",
-        theme_color: "blue-2",
-        title: "ORIGINAL",
-      },
-      {
-        color: "gold",
-        theme_color: "gold",
-        title: "FOR COMPLIANCE",
-      },
-      {
-        color: "green",
-        theme_color: "green-4",
-        title: "REVISION",
-      }
-    ],
+      legends: [
+        {
+          color: "blue",
+          title: "ORIGINAL",
+        },
+        {
+          color: "gold",
+          title: "FOR COMPLIANCE",
+        },
+        {
+          color: "green",
+          title: "REVISION",
+        }
+      ],
 
 
       localTimer: null,
       refresh_sec: 0,
-      active_tab: "ALL",
+      active_tab: "ORIGINAL",
 
       //pagination
       columns: [
@@ -301,50 +297,48 @@
 
       update(row) {
         this.selected_item = row;
-        // if(row.isLocked){
-        //   if(this.isOwned(row)){
-        //     this.$router.push({ name: "individual-application-update", params: { id: row.id } });
-        //   } else {
-        //     Notify.create({
-        //       message: "This application does not belong to you.",
-        //       position: 'top-right',
-        //       closeBtn: "X",
-        //       timeout: 2000,
-        //       color: 'red',
-        //     });
-        //   }
-        // } else {
-        //   this.lockModal = true;
-        // }
-        this.$router.push({ name: "individual-application-update", params: { id: row.id } });
+        if(row.isLocked){
+          if(this.isOwned(row)){
+            this.$router.push({ name: "individual-application-update", params: { id: row.id } });
+          } else {
+            Notify.create({
+              message: "This application does not belong to you.",
+              position: 'top-right',
+              closeBtn: "X",
+              timeout: 2000,
+              color: 'red',
+            });
+          }
+        } else {
+          this.lockModal = true;
+        }
       },
-      
 
-      async getList(){
+      async getList(is_search){
         let vm = this;
-        if(vm.is_search){
+        if(is_search){
           vm.current = 1;
         }
-        vm.is_loading = true;
         
+        vm.is_loading = true;
         let payload = {
           data: {
-            "release_status": "FOR RELEASE",
-            // "application_type": ["REGULAR", "BATCH"],
+            "application_type": ["REGULAR"],
+            "form_group": "MULTIPLE",
             "search": vm.search,
-            // "process_type": vm.active_tab
+            "process_type": vm.active_tab
           },
           params: {
             take: vm.take,
             page: vm.current
           }
         }
-        let {data, status} = await vm.$store.dispatch("asc_user/getPerReleaseStatus", payload);
+        let {data, status} = await vm.$store.dispatch("s1/getS1Applications", payload);
         if([200, 201].includes(status)){
           vm.table_data = data.data.map((item) => {
             return {...item, 
-              company_name: item.company.name, 
-              type_medium_name: item.type_of_medium.length > 0 ? item.type_of_medium.map((i) => i.type_of_medium ): '--',
+              company_name: item?.company?.name || "", 
+              type_medium_name: item.type_of_medium.length > 0 ? item.type_of_medium.map((i) => i.type_of_medium ): [],
               is_self_assigned: true, // TO BE UPDATED ONCE DONE IN SIR KEVIN'S ENDPOINT
             }
           }) || [];
@@ -358,10 +352,9 @@
       async getCount(processType){
         let vm = this;
         let payload = {
-
           data: {
-            "form_group": "FOR RELEASE",
-            "application_type": ["REGULAR", "BATCH"],
+            "application_type": ["REGULAR"],
+            "form_group": "MULTIPLE",
             "search": vm.search,
             "process_type": processType
           },
@@ -372,7 +365,7 @@
         }
         let {data, status} = await vm.$store.dispatch("s1/getS1Applications", payload);
 
-        return data.data.length;
+        return data.count;
       },
 
       async confirmLock(){
@@ -382,7 +375,7 @@
           id: vm.selected_item.id
         }
         
-        let {data, status} = await this.$store.dispatch("asc_user/lockApp", payload);
+        let {data, status} = await this.$store.dispatch("ascUser/lockApp", payload);
 
         if([200, 201].includes(status)){
           Notify.create({
@@ -400,4 +393,3 @@
     }
   }
 </script>
-

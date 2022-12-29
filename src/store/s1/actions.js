@@ -38,7 +38,7 @@ export const verifyApp = async ({ commit }, payload) => {
     try {
         res = await axios({
           method: "put",
-          url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/verify-applications/${payload.id}`,
+          url: `${getEnv('API_BASE_URL')}${prefix}/ad-specialist/proceed-applications/${payload.id}`,
           data: payload.data,
           headers: headers,
         });

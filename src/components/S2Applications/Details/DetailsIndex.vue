@@ -311,7 +311,7 @@ import { Notify } from "quasar";
         vm.type_of_medium_new = data.type_of_medium;
         vm.affiliate_id = data.company.affiliateID;;
         vm.affiliate_name = data.company?.affiliate?.name || "--";
-        vm.isMoving = data.type_of_medium[0].isMoving == 0 ? false : true;
+        vm.isMoving = data.type_of_medium.length > 0 ? data.type_of_medium[0].isMoving == 0 ? false : true : false;
         // alert(vm.isMoving);
         
         this.selected_item = data;
@@ -391,7 +391,7 @@ import { Notify } from "quasar";
             timeout: 2000,
             color: 'green',
           });
-          this.$router.push({name: 'individual-application-list'});
+          this.$router.push({name: 'individual-application-list-s2'});
         } else {
           Notify.create({
             message: data.message,

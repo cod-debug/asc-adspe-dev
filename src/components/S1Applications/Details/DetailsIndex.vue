@@ -80,7 +80,7 @@
                           leave-active-class="animated fadeOut">
                 <div>
                   <strong class="text-grey-14">EXTERNAL</strong>
-                  <RichText v-model="external_comment_input" />
+                  <RichText v-model="external_comment_input" :disabled="release_status" />
                 </div>
               </transition>
               <div class="q-mt-md">
@@ -91,7 +91,7 @@
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-card-section>
+      <q-card-section v-if="release_status != null">
         <div class="row">
           <div class="col-12 col-md-4">
             <div class="form-group">
@@ -144,10 +144,10 @@
 
     computed: {
       disable_comment_btn() {
-        if (this.tab === 'internal_comments_tab' && this.internal_comment_input !== '') {
+        if (this.tab === 'internal_comments_tab' && this.internal_comment_input !== '' && release_status) {
           return false;
         }
-        if (this.tab === 'external_comments_tab' && this.external_comment_input !== '') {
+        if (this.tab === 'external_comments_tab' && this.external_comment_input !== '' && release_status) {
           return false;
         }
 
@@ -309,10 +309,12 @@
         let vm = this;
         vm.is_loading = true;
         let payload = {
+          decision_status: "",
+          valid_until: "",
           id: vm.selectedId
         }
 
-        let {data, status} = await vm.$store.dispatch('asc_user/getSpecific', payload);
+        let {data, status} = await vm.$store.dispatch('s1/verifyApp', payload);
         console.log(data);
         for(let column in data){
           vm[column] = data[column];

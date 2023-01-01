@@ -103,6 +103,8 @@
     data: () => ({
       currentTime: "",
       todayFormated: "",
+      user_name: "",
+      show_context_menu: null,
     }),
     watch: {
     },

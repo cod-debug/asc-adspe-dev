@@ -67,13 +67,13 @@ export default {
             {
               icon: "fa-solid fa-caret-right",
               label: "Multiple Applications",
-              count: 0,
+              count: data.multipleCount || 0,
               path: "/asc/page/application/s1/multiple",
             },
             {
               icon: "fa-solid fa-caret-right",
               label: "Special Applications",
-              count: 0,
+              count: data.specialCount || 0,
               path: "/asc/page/application/s1/special",
             },
             {

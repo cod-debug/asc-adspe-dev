@@ -91,7 +91,7 @@
           </q-card-section>
         </q-card>
       </q-card-section>
-      <q-card-section v-if="release_status != null">
+      <q-card-section v-if="release_status == null">
         <div class="row">
           <div class="col-12 col-md-4">
             <div class="form-group">
@@ -133,7 +133,6 @@
   import MaterialInformation from "./Items/MaterialInformation";
   import RichText from "components/AddOns/RichText"
   import { Notify } from "quasar";
-  import { stat } from "fs";
   export default {
     components: {
       ClientInformation,
@@ -280,7 +279,7 @@
         this.getAllUsers();
       },
       backToList() {
-        this.$router.push({ name: "individual-application-list" });
+        this.$router.go(-1);
       },
 
       async getAllUsers(){
@@ -304,22 +303,18 @@
         })
 
       },
-
       async getSpecific(){
         let vm = this;
         vm.is_loading = true;
         let payload = {
-          decision_status: "",
-          valid_until: "",
           id: vm.selectedId
         }
 
-        let {data, status} = await vm.$store.dispatch('s1/verifyApp', payload);
+        let {data, status} = await vm.$store.dispatch('asc_user/getSpecific', payload);
         console.log(data);
         for(let column in data){
           vm[column] = data[column];
         }
-        
 
         vm.applicant_fullname = `${vm.applicant.fname} ${vm.applicant.mname} ${vm.applicant.lname}` || "--";
         vm.company_name = `${vm.company.name}` || "--";
@@ -329,14 +324,50 @@
         vm.company_email = `${vm.applicant.email}` || "--";
         vm.internal_comment_input = `${vm.internal_comment != null ? vm.internal_comment : ''}` || "";
         vm.external_comment_input = `${vm.external_comment != null ? vm.external_comment : ''}` || "";
-        vm.affiliate_name = data.company?.affiliate?.name || "--";
         vm.type_of_medium_parsed = vm.type_of_medium.map((i) => {
           return i.type_of_medium
         })
         vm.type_of_medium_new = data.type_of_medium;
-        vm.$nextTick(() => {
+        vm.affiliate_id = data.company.affiliateID;;
+        vm.affiliate_name = data.company?.affiliate?.name || "--";
+        vm.isMoving = data.type_of_medium.length > 0 ? data.type_of_medium[0].isMoving == 0 ? false : true : false;
+        // alert(vm.isMoving);
+        
+        this.selected_item = data;
+        this.$nextTick(() => {
           vm.is_loading = false;
-        });
+        })
+      },
+
+      async verifyApp(){
+        let vm = this;
+        vm.is_loading = true;
+        let payload = {
+          decision_status: "",
+          valid_until: "",
+          id: vm.selectedId
+        }
+
+        let {data, status} = await vm.$store.dispatch('s1/verifyApp', payload);
+        
+        if([200, 201].includes(status)){
+          Notify.create({
+            message: data.message,
+            position: 'top-right',
+            closeBtn: "X",
+            timeout: 2000,
+            color: 'green',
+          });
+          vm.backToList();
+        } else {
+          Notify.create({
+            message: data.message,
+            position: 'top-right',
+            closeBtn: "X",
+            timeout: 2000,
+            color: 'red',
+          });
+        }
       },
       
       async saveComment(){

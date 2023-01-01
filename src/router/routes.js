@@ -82,6 +82,16 @@ const routes = [
         component: () => import("pages/S2Applications/IndividualApp.vue"),
       },
       {
+        name: "multiple-application-list-s2",
+        path: "application/s2/multiple",
+        component: () => import("pages/S2Applications/MultipleApp.vue"),
+      },
+      {
+        name: "special-application-list-s2",
+        path: "application/s2/special",
+        component: () => import("pages/S2Applications/SpecialApp.vue"),
+      },
+      {
         name: "individual-application-update-s2",
         path: "application/s2/update/:id",
         meta: {

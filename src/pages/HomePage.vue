@@ -76,7 +76,7 @@ export default {
         this.showPass = !this.showPass;
       },
       initAppp() {
-        // this.$store.dispatch("auth/getAllEmployees");
+        window.location.href = process.env.ADMIN_BASE_URL;
       },
       async login() {
         let payload = {

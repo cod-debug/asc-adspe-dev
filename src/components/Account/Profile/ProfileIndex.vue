@@ -80,6 +80,7 @@
 import UserDetails from './TabContent/UserDetailsTab';
 import Signature from './TabContent/SignatureTab';
 import AccountInformation from './TabContent/InformationTab';
+import { Notify } from 'quasar';
 export default {
   components: {
     UserDetails,
@@ -142,6 +143,7 @@ export default {
 
     handle_update() {
       console.log('handle_update')
+      let vm = this;
 
       let ref = "";
       if (this.tab === 'user-details') {
@@ -156,17 +158,38 @@ export default {
 
       this.$refs[ref].on_submit_update((payload) => {
         let confirm_message = "";
+        let endpoint = "acount/updateProfile";
         if (this.tab === 'user-details') {
           confirm_message = "Are you sure to update your details?";
+
+          payload = {
+            data: payload,
+            params: {
+              id: localStorage.getItem("ui")
+            }
+          }
+          endpoint = "account/updateProfile";
         }
         else if (this.tab === 'e-signature') {
           confirm_message = "Are you sure to upload your e-signature?";
+          let formData = new FormData();
+
+          formData.append('file', payload.e_signature_file);
+          formData.append('id', localStorage.getItem("ui"));
+          payload = formData;
+          endpoint = "account/updateESign";
         }
         else if (this.tab === 'account-information') {
           confirm_message = "Are you sure to update account?"
+
+          payload = {
+            new_passwd: payload.password,
+            old_passwd: payload.old_password
+          }
+          endpoint = "account/updatePassword";
         }
 
-        console.log('payload', payload)
+        console.log(payload, "PAYLOAD");
 
         this.$q.dialog({
           title: 'Confirmation',
@@ -179,8 +202,26 @@ export default {
             push: true,
             color: "primary"
           },
-        }).onOk(() => {
-          console.log('continue update here...')
+        }).onOk(async () => {
+          let {data, status} = await vm.$store.dispatch(endpoint, payload);          
+          console.log(data);
+          if([200, 201].includes(status)){
+            Notify.create({
+              message: data.message,
+              position: 'top-right',
+              closeBtn: "X",
+              timeout: 2000,
+              color: 'green',
+            });
+          } else {
+            Notify.create({
+              message: data.message,
+              position: 'top-right',
+              closeBtn: "X",
+              timeout: 2000,
+              color: 'red',
+            });
+          }
         })
       })
 

@@ -326,6 +326,7 @@ import { Notify } from "quasar";
               "form_group": "INDIVIDUAL",
               "application_type": ["SPECIAL SCREENING", "SPECIAL SCREENING AND CLEARING"],
               "processType": vm.active_tab,
+              "form_type": "s1",
               "search": vm.search
           },
           params: {
@@ -353,10 +354,11 @@ import { Notify } from "quasar";
         let vm = this;
         let payload = {
           data: {
-              "form_group": "INDIVIDUAL",
-              "application_type": ["SPECIAL SCREENING", "SPECIAL SCREENING AND CLEARING"],
-              "processType": processType,
-              "search": vm.search
+            "form_group": "INDIVIDUAL",
+            "application_type": ["SPECIAL SCREENING", "SPECIAL SCREENING AND CLEARING"],
+            "processType": processType,
+            "form_type": "s1",
+            "search": vm.search
           },
           params: {
             take: vm.take,

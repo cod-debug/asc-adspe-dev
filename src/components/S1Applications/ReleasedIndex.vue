@@ -333,6 +333,7 @@
             "release_status": "RELEASED",
             // "application_type": ["REGULAR", "BATCH"],
             "search": vm.search,
+            "form_type": "s1",
             // "process_type": vm.active_tab
           },
           params: {
@@ -364,6 +365,7 @@
             "form_group": "FOR RELEASE",
             "application_type": ["REGULAR", "BATCH"],
             "search": vm.search,
+            "form_type": "s1",
             "process_type": processType
           },
           params: {

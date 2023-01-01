@@ -326,6 +326,7 @@ import { Notify } from "quasar";
             "application_type": ["REGULAR"],
             "form_group": "MULTIPLE",
             "search": vm.search,
+            "form_type": "s1",
             "process_type": vm.active_tab
           },
           params: {
@@ -356,6 +357,7 @@ import { Notify } from "quasar";
             "application_type": ["REGULAR"],
             "form_group": "MULTIPLE",
             "search": vm.search,
+            "form_type": "s1",
             "process_type": processType
           },
           params: {

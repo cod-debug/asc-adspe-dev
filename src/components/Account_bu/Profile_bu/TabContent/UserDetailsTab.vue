@@ -26,7 +26,7 @@
                 standout
                 bottom-slots
                 label="Given name"
-                v-model="info.fname"
+                v-model="info.given_name"
                 :rules="[
                   val => val && val.trim().length > 0 || 'This field is required'
                 ]"
@@ -38,7 +38,7 @@
                 standout
                 bottom-slots
                 label="Middle name"
-                v-model="info.mname"
+                v-model="info.middle_name"
                 :rules="[
                   val => val && val.trim().length > 0 || 'This field is required'
                 ]"
@@ -50,7 +50,7 @@
                 standout
                 bottom-slots
                 label="Last name"
-                v-model="info.lname"
+                v-model="info.last_name"
                 :rules="[
                   val => val && val.trim().length > 0 || 'This field is required'
                 ]"
@@ -62,7 +62,7 @@
                 standout
                 bottom-slots
                 label="Mobile number"
-                v-model="info.phone"
+                v-model="info.mobile_number"
                 :rules="[
                   val => val && val.trim().length > 0 || 'This field is required'
                 ]"
@@ -80,10 +80,10 @@ export default {
   props: ['allow_action', 'user_details'],
   data: () => ({
     info: {
-      fname: null,
-      mname: null,
-      lname: null,
-      phone: null,
+      given_name: null,
+      middle_name: null,
+      last_name: null,
+      mobile_number: null,
     }
   }),
 
@@ -96,10 +96,10 @@ export default {
 
     reset_details() {
       let details = this.user_details;
-      this.info.fname = details?.fname || null;
-      this.info.mname = details?.mname || null;
-      this.info.lname = details?.lname || null;
-      this.info.phone = details?.phone || null;
+      this.info.given_name = details?.fname || null;
+      this.info.middle_name = details?.mname || null;
+      this.info.last_name = details?.lname || null;
+      this.info.mobile_number = details?.phone || null;
     },
 
     onValidationError(ref) {

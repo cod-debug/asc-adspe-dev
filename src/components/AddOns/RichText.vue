@@ -1,5 +1,6 @@
 <template>
   <q-editor v-model="editor"
+            :disable="disable_editor"
             toolbar-bg="grey-3"
             ref="editor"
             :content-style="{ fontFamily: Calibri, }"
@@ -64,6 +65,7 @@
 </template>
 <script>
   export default {
+    props:['disable_editor'],
     data() {
       return {
         foreColor: '#000000',

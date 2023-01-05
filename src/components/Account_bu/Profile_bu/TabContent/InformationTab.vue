@@ -32,25 +32,6 @@
                 type="email"
               />
             </div>
-            <div class="col-lg-12 col-md-12 col-sm-12">
-              <q-input
-                outlined
-                standout
-                bottom-slots
-                label="Old Password"
-                v-model="account.old_password"
-                :rules="[val => val && val.length > 0 || 'Password is required']"
-                class="no-pointer"
-                :type="show_old_password ? 'text-pass' : 'password'">
-                <template v-slot:append>
-                  <q-icon
-                    :name="show_old_password ? 'visibility' : 'visibility_off'"
-                    class="cursor-pointer"
-                    @click="show_hide_password('old_password')"
-                  />
-                </template>
-              </q-input>
-            </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
               <q-input
                 outlined
@@ -137,12 +118,10 @@
 export default {
   props: ['allow_action', 'user_details'],
   data: () => ({
-    show_old_password: false,
     show_password: false,
     show_confirm_password: false,
     account: {
       email: null,
-      old_password: null,
       password: null,
       confirm_password: null,
     }
@@ -231,8 +210,6 @@ export default {
       }
       else if (type === 'confirm_password') {
         this.show_confirm_password = !this.show_confirm_password;
-      } else if (type === 'old_password'){
-        this.show_old_password = !this.show_old_password;
       }
     },
   },

@@ -186,8 +186,8 @@ import { Notify } from "quasar";
           count: 0
         },
         {
-          name: "COMPLIANCE",
-          code: 'COMPLIANCE',
+          name: "TOA",
+          code: 'TOA',
           count: 0
         },
         /*{
@@ -324,7 +324,7 @@ import { Notify } from "quasar";
         let payload = {
           data: {
               "form_group": "INDIVIDUAL",
-              "application_type": ["SPECIAL SCREENING", "SPECIAL SCREENING AND CLEARING"],
+              "application_type": ["SPECIAL CLEARING", "SPECIAL SCREENING AND CLEARING"],
               "processType": vm.active_tab,
               "form_type": "s2",
               "search": vm.search
@@ -355,7 +355,7 @@ import { Notify } from "quasar";
         let payload = {
           data: {
             "form_group": "INDIVIDUAL",
-            "application_type": ["SPECIAL SCREENING", "SPECIAL SCREENING AND CLEARING"],
+            "application_type": ["SPECIAL CLEARING", "SPECIAL SCREENING AND CLEARING"],
             "processType": processType,
             "form_type": "s2",
             "search": vm.search
@@ -377,7 +377,7 @@ import { Notify } from "quasar";
           id: vm.selected_item.id
         }
         
-        let {data, status} = await this.$store.dispatch("ascUser/lockApp", payload);
+        let {data, status} = await this.$store.dispatch("asc_user/lockApp", payload);
 
         if([200, 201].includes(status)){
           Notify.create({

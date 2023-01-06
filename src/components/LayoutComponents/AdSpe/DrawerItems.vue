@@ -51,6 +51,7 @@ export default {
   }),
   methods: {
     async initApp() {
+      let vm = this;
       
       let {data, status} = await this.$store.dispatch("asc_user/getCountByRole");
       this.drawerItems = [
@@ -96,8 +97,8 @@ export default {
           children: [
             {
               icon: "fa-solid fa-caret-right",
-              label: "Application List",
-              count: 0,
+              label: "Individual Applications",
+              count: data.s2InvididualCount,
               path: "/asc/page/application/s2/lists",
             },
             {
@@ -120,6 +121,18 @@ export default {
           path: "/asc/page/announcement",
         },
       ];
+
+      setInterval(async () => {
+        let {data, status} = await this.$store.dispatch("asc_user/getCountByRole");
+        if([200, 201].includes(status)){
+          vm.drawerItems[0].children[0].count = data.individualCount;
+          vm.drawerItems[0].children[1].count = data.multipleCount;
+          vm.drawerItems[0].children[2].count = data.specialCount;
+          vm.drawerItems[1].children[0].count = data.s2InvididualCount;
+          vm.drawerItems[1].children[1].count = data.s2MultipleCount;
+          vm.drawerItems[1].children[2].count = data.s2SpecialCount;
+        }
+      }, 1000);
     }
   },
   mounted() {

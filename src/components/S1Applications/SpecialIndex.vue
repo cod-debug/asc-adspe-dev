@@ -377,7 +377,7 @@ import { Notify } from "quasar";
           id: vm.selected_item.id
         }
         
-        let {data, status} = await this.$store.dispatch("ascUser/lockApp", payload);
+        let {data, status} = await this.$store.dispatch("asc_user/lockApp", payload);
 
         if([200, 201].includes(status)){
           Notify.create({
